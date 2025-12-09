@@ -6,7 +6,7 @@ public class MotorPrestamos {
 
     public double calcularCuota( double monto, double interesAnual, double  cuotas){
         
-        double i = (interesAnual / 1000.0)/12.0;
+        double i = (interesAnual / 100.0)/12.0;
 
         if( i == 0){
 

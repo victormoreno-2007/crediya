@@ -12,9 +12,9 @@ public class PrestamoService {
     private final MotorPrestamos motor;
     private final PrestamoDAO prestamoDAO;
 
-    public PrestamoService(MotorPrestamos motor, PrestamoDAO prestamoDAO){
-        this.motor = motor;
-        this.prestamoDAO = prestamoDAO;
+    public PrestamoService(){
+        this.motor = new MotorPrestamos();
+        this.prestamoDAO = new PrestamoDAO();
     }
 
     public Prestamo crearPrestamo(Clientes cliente, Empleado empleado, 
