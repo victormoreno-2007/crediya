@@ -1,6 +1,6 @@
 package com.crediya.models;
 
-public class Persona {
+public abstract class Persona {
     protected int id;
     protected String nombre;
     protected String documento;
