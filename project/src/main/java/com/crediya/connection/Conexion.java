@@ -9,8 +9,14 @@ public class Conexion {
     private static final String USER = "root";
     private static final String PASSWORD = "admin";
 
-    public static Connection connec() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+    public static Connection getConexion(){
+        Connection con = null;
+        try {
+            con = DriverManager.getConnection(URL, USER, PASSWORD);
+        } catch (SQLException e) {
+            System.err.println("Error conexión: " + e.getMessage());
+        }
+        return con;
     }
 
 }

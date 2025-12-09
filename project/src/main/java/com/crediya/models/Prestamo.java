@@ -13,10 +13,16 @@ public class Prestamo {
     private Clientes cliente;
     private Empleado empleado;
 
+   
+    private double montoTotal;
+    private double cuotaMensual;
+
     public Prestamo() {
     }
 
-    public Prestamo(int id, double monto, double interes, LocalDate fechaInicio, int cuotas, String estado, double saldoPendiente, Clientes cliente, Empleado empleado) {
+    public Prestamo(int id, double monto, double interes, LocalDate fechaInicio,
+                    int cuotas, String estado, double saldoPendiente,
+                    Clientes cliente, Empleado empleado) {
         this.id = id;
         this.monto = monto;
         this.interes = interes;
@@ -28,7 +34,8 @@ public class Prestamo {
         this.empleado = empleado;
     }
 
-    public Prestamo(double monto, double interes, int cuotas, Clientes cliente, Empleado empleado){
+    public Prestamo(double monto, double interes, int cuotas,
+                    Clientes cliente, Empleado empleado) {
         this.monto = monto;
         this.interes = interes;
         this.cuotas = cuotas;
@@ -108,10 +115,26 @@ public class Prestamo {
         this.cuotas = cuotas;
     }
 
-    @Override
-    public String toString() {
-        // Mostramos info útil, no direcciones de memoria
-        return "Préstamo #" + id + " | Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") + " | Saldo: $" + saldoPendiente;
+    public double getMontoTotal() {
+        return montoTotal;
     }
 
+    public void setMontoTotal(double montoTotal) {
+        this.montoTotal = montoTotal;
+    }
+
+    public double getCuotaMensual() {
+        return cuotaMensual;
+    }
+
+    public void setCuotaMensual(double cuotaMensual) {
+        this.cuotaMensual = cuotaMensual;
+    }
+
+    @Override
+    public String toString() {
+        return "Préstamo #" + id +
+               " | Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") +
+               " | Saldo: $" + saldoPendiente;
+    }
 }
