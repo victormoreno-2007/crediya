@@ -6,6 +6,7 @@ import com.crediya.persistence.EmpleadoRepositorio;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,13 +38,53 @@ public class EmpleadoDAO implements EmpleadoRepositorio {
         String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados";
 
         try (Connection con = Conexion.getConexion();
-        ){
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()){
 
+            while (rs.next()) {
+                Empleado emp = new Empleado(
+                        rs.getString("nombre"),
+                        rs.getString("documento"),
+                        rs.getString("rol"),
+                        rs.getString("correo"),
+                        rs.getDouble("salario")
+                );
+
+                lista.add(emp);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("tuvistes un eror al listar los empleados "+ e.getMessage());
         }
+        return lista;
     }
 
     @Override
     public Empleado buscarPorDOcumento(String documento) {
-        return null;
+        String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados WHERE id=?";
+        Empleado emp = null;
+
+        try(Connection con = Conexion.getConexion();
+        PreparedStatement ps = con.prepareStatement(sql)){
+
+            ps.setString(1, documento);
+
+            try(ResultSet rs = ps.executeQuery()){
+                if (rs.next()) {
+                    emp = new Empleado(
+                            rs.getInt("id"),
+                            rs.getString("nombre"),
+                            rs.getString("documento"),
+                            rs.getString("correo"),
+                            rs.getString("rol"),
+                            rs.getDouble("salario")
+                    );
+                }
+            }
+
+            } catch (SQLException ex) {
+            System.out.println("erro al buscar el empleado "+ ex.getMessage());
+        }
+        return emp;
     }
 }
