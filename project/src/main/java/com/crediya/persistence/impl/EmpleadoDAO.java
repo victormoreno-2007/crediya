@@ -61,7 +61,7 @@ public class EmpleadoDAO implements EmpleadoRepositorio {
 
     @Override
     public Empleado buscarPorDOcumento(String documento) {
-        String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados WHERE id=?";
+        String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados WHERE documento=?";
         Empleado emp = null;
 
         try(Connection con = Conexion.getConexion();
@@ -72,7 +72,6 @@ public class EmpleadoDAO implements EmpleadoRepositorio {
             try(ResultSet rs = ps.executeQuery()){
                 if (rs.next()) {
                     emp = new Empleado(
-                            rs.getInt("id"),
                             rs.getString("nombre"),
                             rs.getString("documento"),
                             rs.getString("correo"),
