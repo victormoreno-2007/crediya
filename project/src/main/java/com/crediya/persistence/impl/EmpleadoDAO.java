@@ -25,6 +25,8 @@ public class EmpleadoDAO implements EmpleadoRepositorio {
             ps.setString(4, empleado.getCorreo());
             ps.setDouble(5, empleado.getSalario());
 
+            ps.executeUpdate();
+
             System.out.println("Empleado registrado exitosamente");
 
         } catch (SQLException e) {

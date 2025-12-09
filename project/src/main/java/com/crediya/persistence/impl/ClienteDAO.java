@@ -24,6 +24,8 @@ public class ClienteDAO implements ClienteRepositorio {
             ps.setString(3, cliente.getCorreo());
             ps.setString(4, cliente.getTelefono());
 
+            ps.executeUpdate();
+
             System.out.println("Cliente registrado exitosamente");
 
         } catch (SQLException e) {
