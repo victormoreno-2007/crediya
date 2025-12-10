@@ -84,7 +84,7 @@ public class EmpleadoDAO implements EmpleadoRepositorio {
             }
 
             } catch (SQLException ex) {
-            System.out.println("erro al buscar el empleado "+ ex.getMessage());
+            System.out.println("Error al buscar el empleado "+ ex.getMessage());
         }
         return emp;
     }
