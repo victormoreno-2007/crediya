@@ -1,0 +1,14 @@
+# Archivos compilados de Java
+*.class
+
+# Carpetas de compilación (Maven/IntelliJ)
+project/target/
+out/
+
+# Archivos de configuración de IntelliJ IDEA
+.idea/
+*.iml
+
+# Archivos temporales o de sistema
+*.log
+.DS_Store
