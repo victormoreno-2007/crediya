@@ -76,6 +76,7 @@ public class ClienteDAO implements ClienteRepositorio {
                             rs.getString("correo"),
                             rs.getString("telefono")
                     );
+                    ct.setId(rs.getInt("id"));
                 }
             }
         } catch (SQLException e) {
