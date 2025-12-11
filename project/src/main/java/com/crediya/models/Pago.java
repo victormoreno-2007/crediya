@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public class Pago {
     private int id;
-    private Prestamo prestamo;  // relación OBJETO ←→ BD usa prestamo.getId()
+    private Prestamo prestamo;
     private LocalDate fechaPago;
     private double monto;
 

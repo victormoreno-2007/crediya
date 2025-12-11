@@ -1,18 +1,18 @@
 package com.crediya.models;
 
-public class Clientes extends Persona{
+public class Cliente extends Persona{
     private String telefono;
 
-    public Clientes(){
-        super();
+    public Cliente(){
+
     }
 
-    public Clientes(int id, String nombre, String documento, String correo, String telefono) {
+    public Cliente(int id, String nombre, String documento, String correo, String telefono) {
         super(id, nombre, documento, correo);
         this.telefono = telefono;
     }
 
-    public Clientes(String nombre, String documento, String correo, String telefono) {
+    public Cliente(String nombre, String documento, String correo, String telefono) {
         super(0, nombre, documento, correo);
         this.telefono = telefono;
     }

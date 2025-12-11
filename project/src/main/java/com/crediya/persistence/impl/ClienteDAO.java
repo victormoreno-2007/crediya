@@ -1,8 +1,8 @@
 package com.crediya.persistence.impl;
 
 import com.crediya.connection.Conexion;
-import com.crediya.models.Clientes;
-import com.crediya.persistence.ClienteRepositorio;
+import com.crediya.models.Cliente;
+import com.crediya.repository.ClienteRepository;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,9 +11,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteDAO implements ClienteRepositorio {
+public class ClienteDAO implements ClienteRepository {
     @Override
-    public void registrar(Clientes cliente) {
+    public void registrar(Cliente cliente) {
         String sql = "INSERT INTO clientes(nombre, documento, correo, telefono) VALUES(?,?,?,?)";
 
         try (Connection con = Conexion.getConexion();
@@ -34,8 +34,8 @@ public class ClienteDAO implements ClienteRepositorio {
     }
 
     @Override
-    public List<Clientes> listarTodos() {
-        List<Clientes> lista = new ArrayList<>();
+    public List<Cliente> listarTodos() {
+        List<Cliente> lista = new ArrayList<>();
         String sql = "SELECT nombre, documento, correo, telefono FROM clientes";
 
         try(Connection con =  Conexion.getConexion();
@@ -43,7 +43,7 @@ public class ClienteDAO implements ClienteRepositorio {
             ResultSet rs = ps.executeQuery()){
 
             while (rs.next()){
-                Clientes ct = new Clientes(
+                Cliente ct = new Cliente(
                         rs.getString("nombre"),
                         rs.getString("documento"),
                         rs.getString("correo"),
@@ -59,9 +59,9 @@ public class ClienteDAO implements ClienteRepositorio {
     }
 
     @Override
-    public Clientes buscarPorDocumento(String documento) {
+    public Cliente buscarPorDocumento(String documento) {
         String sql = "SELECT nombre, documento, correo, telefono FROM clientes WHERE documento=?";
-        Clientes ct = null;
+        Cliente ct = null;
 
         try(Connection con = Conexion.getConexion();
         PreparedStatement ps = con.prepareStatement(sql) ){
@@ -70,7 +70,7 @@ public class ClienteDAO implements ClienteRepositorio {
 
             try(ResultSet rs = ps.executeQuery()){
                 if (rs.next()){
-                    ct = new Clientes(
+                    ct = new Cliente(
                             rs.getString("nombre"),
                             rs.getString("documento"),
                             rs.getString("correo"),

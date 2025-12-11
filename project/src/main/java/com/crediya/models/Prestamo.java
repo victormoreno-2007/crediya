@@ -10,7 +10,7 @@ public class Prestamo {
     private LocalDate fechaInicio;
     private String estado;
     private double saldoPendiente;
-    private Clientes cliente;
+    private Cliente cliente;
     private Empleado empleado;
 
    
@@ -22,7 +22,7 @@ public class Prestamo {
 
     public Prestamo(int id, double monto, double interes, LocalDate fechaInicio,
                     int cuotas, String estado, double saldoPendiente,
-                    Clientes cliente, Empleado empleado) {
+                    Cliente cliente, Empleado empleado) {
         this.id = id;
         this.monto = monto;
         this.interes = interes;
@@ -35,7 +35,7 @@ public class Prestamo {
     }
 
     public Prestamo(double monto, double interes, int cuotas,
-                    Clientes cliente, Empleado empleado) {
+                    Cliente cliente, Empleado empleado) {
         this.monto = monto;
         this.interes = interes;
         this.cuotas = cuotas;
@@ -83,11 +83,11 @@ public class Prestamo {
         this.saldoPendiente = saldoPendiente;
     }
 
-    public Clientes getCliente() {
+    public Cliente getCliente() {
         return cliente;
     }
 
-    public void setCliente(Clientes cliente) {
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
 

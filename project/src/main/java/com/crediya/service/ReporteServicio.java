@@ -1,6 +1,6 @@
 package com.crediya.service;
 
-import com.crediya.models.Clientes;
+import com.crediya.models.Cliente;
 import com.crediya.persistence.impl.ClienteDAO;
 import com.crediya.util.GestorArchivos;
 
@@ -21,7 +21,7 @@ public class ReporteServicio {
     public void crearArchivos(){
         System.out.println("Generando archivos");
 
-        List<Clientes> listarClientes = clienteDAO.listarTodos();
+        List<Cliente> listarClientes = clienteDAO.listarTodos();
 
         if (listarClientes.isEmpty()){
             System.out.println("Aun no hay clientes disponibles");
