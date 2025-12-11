@@ -1,4 +1,4 @@
-package com.crediya.data.repositories;
+package com.crediya.repository;
 
 import com.crediya.models.Cliente;
 

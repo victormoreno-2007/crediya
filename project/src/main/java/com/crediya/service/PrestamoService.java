@@ -2,7 +2,7 @@ package com.crediya.service;
 
 import java.time.LocalDate;
 
-import com.crediya.models.Clientes;
+import com.crediya.models.Cliente;
 import com.crediya.models.Empleado;
 import com.crediya.models.Prestamo;
 import com.crediya.persistence.impl.PrestamoDAO;
@@ -17,7 +17,7 @@ public class PrestamoService {
         this.prestamoDAO = new PrestamoDAO();
     }
 
-    public Prestamo crearPrestamo(Clientes cliente, Empleado empleado, 
+    public Prestamo crearPrestamo(Cliente cliente, Empleado empleado,
                                   double monto, double interesAnual, int cuotas){
 
         double cuota = motor.calcularCuota(monto, interesAnual, cuotas);

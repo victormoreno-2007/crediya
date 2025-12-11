@@ -1,4 +1,13 @@
 package com.crediya.repository;
 
-public class EmpleadoRepository {
+import com.crediya.models.Empleado;
+
+import java.util.List;
+
+public interface EmpleadoRepository {
+    void guardar(Empleado empleado);
+
+    List<Empleado> listarTodos();
+
+    Empleado buscarPorDocumento(String documento);
 }
