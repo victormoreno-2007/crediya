@@ -4,7 +4,7 @@ public class Clientes extends Persona{
     private String telefono;
 
     public Clientes(){
-        super();
+
     }
 
     public Clientes(int id, String nombre, String documento, String correo, String telefono) {
