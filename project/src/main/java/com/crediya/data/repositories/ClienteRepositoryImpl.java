@@ -3,8 +3,12 @@ package com.crediya.data.repositories;
 import com.crediya.connection.Conexion;
 import com.crediya.data.entities.ClienteEntity;
 import com.crediya.data.mapper.ClienteMapper;
-import com.crediya.models.Cliente;
-import com.crediya.repository.ClienteRepository;
+import com.crediya.domain.errors.DuplicateDocumentException;
+import com.crediya.domain.errors.ErrorDomain;
+import com.crediya.domain.errors.ErrorType;
+import com.crediya.domain.models.Cliente;
+import com.crediya.domain.repository.ClienteRepository;
+import com.crediya.domain.response.ResponseDomain;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,9 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteRepositoryImpl implements ClienteRepository {
+
     @Override
-    public void registrar(Cliente clienteModelo) {
+    public ResponseDomain<ErrorDomain, Integer> registrar(Cliente clienteModelo) {
         ClienteEntity entity = ClienteMapper.toEntity(clienteModelo);
+        var exists = buscarPorDocumento(clienteModelo.getDocumento());
+        if(exists != null) {
+            return new ResponseDomain(new DuplicateDocumentException("The document field is asociado a other user xd"));
+        }
 
         String sql = "INSERT INTO clientes (nombre, documento, correo, telefono) VALUES (?, ?, ?, ?)";
 
@@ -27,17 +36,18 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             pst.setString(3, entity.getCorreo());
             pst.setString(4, entity.getTelefono());
 
-            pst.executeUpdate();
+            var rows = pst.executeUpdate();
 
-            System.out.printf("cliente guardado con exito :)");
+            return new ResponseDomain(rows);
         } catch (SQLException e) {
             System.out.printf("Error al guardar el cliente "+ e.getMessage());
+            return new ResponseDomain(new ErrorDomain(ErrorType.DUPLICATE_ID_FIELD));
         }
 
     }
 
     @Override
-    public List<Cliente> listarTodos() {
+    public ResponseDomain<ErrorDomain, List<Cliente>> listarTodos() {
         List<Cliente> listaNegocio = new ArrayList<>();
         String sql = "SELECT nombre, documento, correo, telefono FROM clientes";
 
@@ -60,8 +70,9 @@ public class ClienteRepositoryImpl implements ClienteRepository {
 
         } catch (SQLException e) {
             System.out.printf("Error al listar los clientes :( "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_PRIMARY_KEY));
         }
-        return listaNegocio;
+        return ResponseDomain.success(listaNegocio);
     }
 
     @Override

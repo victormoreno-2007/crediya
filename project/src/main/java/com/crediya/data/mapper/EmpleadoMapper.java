@@ -1,7 +1,7 @@
 package com.crediya.data.mapper;
 
 import com.crediya.data.entities.EmpleadoEntity;
-import com.crediya.models.Empleado;
+import com.crediya.domain.models.Empleado;
 
 public class EmpleadoMapper {
     public static Empleado toModel(EmpleadoEntity entity){

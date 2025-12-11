@@ -1,43 +1,43 @@
-package com.crediya.service;
+// package com.crediya.service;
 
-import java.time.LocalDate;
+// import java.time.LocalDate;
 
-import com.crediya.models.Cliente;
-import com.crediya.models.Empleado;
-import com.crediya.models.Prestamo;
-import com.crediya.persistence.impl.PrestamoDAO;
+// import com.crediya.domain.models.Cliente;
+// import com.crediya.domain.models.Empleado;
+// import com.crediya.domain.models.Prestamo;
+// import com.crediya.data.persistence.impl.PrestamoDAO;
 
-public class PrestamoService {
+// public class PrestamoService {
     
-    private final MotorPrestamos motor;
-    private final PrestamoDAO prestamoDAO;
+//     private final MotorPrestamos motor;
+//     private final PrestamoDAO prestamoDAO;
 
-    public PrestamoService(){
-        this.motor = new MotorPrestamos();
-        this.prestamoDAO = new PrestamoDAO();
-    }
+//     public PrestamoService(){
+//         this.motor = new MotorPrestamos();
+//         this.prestamoDAO = new PrestamoDAO();
+//     }
 
-    public Prestamo crearPrestamo(Cliente cliente, Empleado empleado,
-                                  double monto, double interesAnual, int cuotas){
+//     public Prestamo crearPrestamo(Cliente cliente, Empleado empleado,
+//                                   double monto, double interesAnual, int cuotas){
 
-        double cuota = motor.calcularCuota(monto, interesAnual, cuotas);
-        double montoTotal = motor.calcularMontoTotal(cuota, cuotas);
+//         double cuota = motor.calcularCuota(monto, interesAnual, cuotas);
+//         double montoTotal = motor.calcularMontoTotal(cuota, cuotas);
 
-        Prestamo p = new Prestamo();
-        p.setCliente(cliente);
-        p.setEmpleado(empleado);
-        p.setMonto(monto);
-        p.setInteres(interesAnual);
-        p.setCuotas(cuotas);
-        p.setCuotaMensual(cuota);    
-        p.setMontoTotal(montoTotal);  
-        p.setSaldoPendiente(montoTotal);  
-        p.setFechaInicio(LocalDate.now());
-        p.setEstado("PENDIENTE");
+//         Prestamo p = new Prestamo();
+//         p.setCliente(cliente);
+//         p.setEmpleado(empleado);
+//         p.setMonto(monto);
+//         p.setInteres(interesAnual);
+//         p.setCuotas(cuotas);
+//         p.setCuotaMensual(cuota);    
+//         p.setMontoTotal(montoTotal);  
+//         p.setSaldoPendiente(montoTotal);  
+//         p.setFechaInicio(LocalDate.now());
+//         p.setEstado("PENDIENTE");
 
-        prestamoDAO.guardarPrestamo(p); 
+//         prestamoDAO.guardarPrestamo(p); 
 
-        return p;
-    }
-}
+//         return p;
+//     }
+// }
 

@@ -1,7 +1,7 @@
 package com.crediya.data.mapper;
 
 import com.crediya.data.entities.ClienteEntity;
-import com.crediya.models.Cliente;
+import com.crediya.domain.models.Cliente;
 
 public class ClienteMapper {
     public static Cliente toModel(ClienteEntity entity){

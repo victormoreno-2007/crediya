@@ -1,4 +1,4 @@
-package com.crediya.models;
+package com.crediya.domain.models;
 
 public class Empleado extends Persona {
     private String rol;

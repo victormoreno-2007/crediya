@@ -1,4 +1,4 @@
-package com.crediya.models;
+package com.crediya.domain.models;
 
 public abstract class Persona {
     protected int id;

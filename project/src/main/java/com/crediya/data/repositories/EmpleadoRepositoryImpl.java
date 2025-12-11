@@ -3,24 +3,34 @@ package com.crediya.data.repositories;
 import com.crediya.connection.Conexion;
 import com.crediya.data.entities.EmpleadoEntity;
 import com.crediya.data.mapper.EmpleadoMapper;
-import com.crediya.models.Empleado;
-import com.crediya.repository.EmpleadoRepository;
+import com.crediya.domain.errors.DuplicateDocumentException;
+import com.crediya.domain.errors.ErrorDomain;
+import com.crediya.domain.errors.ErrorType;
+import com.crediya.domain.models.Empleado;
+import com.crediya.domain.repository.EmpleadoRepository;
+import com.crediya.domain.response.ResponseDomain;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmpleadoRepositoryImpl implements EmpleadoRepository {
     @Override
-    public void guardar(Empleado empleadoModelo) {
-        EmpleadoEntity entity = EmpleadoMapper.toEntity(empleadoModelo);
+    public ResponseDomain<ErrorDomain, Integer> guardar(Empleado empleadoModelo) {
+
+        if (empleadoModelo.getSalario() < 0) {
+            return ResponseDomain.error(new ErrorDomain(ErrorType.NO_NEGATIVE_WAGES));
+        }
+
+        ResponseDomain<ErrorDomain, Empleado> exist = buscarPorDocumento(empleadoModelo.getDocumento());
+        if (!exist.hasError()) {
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_PRIMARY_KEY));
+        }
+
         String sql = "INSERT INTO empleados(nombre, documento, rol, correo, salario) VALUES(?,?,?,?,?)";
 
         try (Connection cont = Conexion.getConexion();
-             PreparedStatement ps = cont.prepareStatement(sql)){
+             PreparedStatement ps = cont.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
 
             ps.setString(1, empleadoModelo.getNombre());
             ps.setString(2, empleadoModelo.getDocumento());
@@ -28,18 +38,32 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
             ps.setString(4, empleadoModelo.getCorreo());
             ps.setDouble(5, empleadoModelo.getSalario());
 
-            ps.executeUpdate();
+            var rows = ps.executeUpdate();
 
-            System.out.println("Empleado registrado exitosamente");
+            if (rows > 0){
+                try(ResultSet rst = ps.getGeneratedKeys()){
+                    if (rst.next()){
+                        int idGenerado = rst.getInt(1);
+                        return ResponseDomain.success(idGenerado);
+                    }
+                }
+            }
+
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_ID_FIELD));
 
         } catch (SQLException e) {
-            System.out.println("error al guardar el empleado  "+ e.getMessage());
+            if (e.getMessage().contains("Duplicate")){
+                return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_ID_FIELD));
+            }
+
+            System.out.printf("Error en la base de datos: "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_ID_FIELD));
         }
     }
 
     @Override
-    public List<Empleado> listarTodos() {
-        List<Empleado> lista = new ArrayList<>();
+    public ResponseDomain<ErrorDomain, List<Empleado>> listarTodos() {
+        List<Empleado> listaNegocio = new ArrayList<>();
         String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados";
 
         try (Connection cont = Conexion.getConexion();
@@ -48,24 +72,24 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
 
             while (rst.next()) {
                 EmpleadoEntity entity = new EmpleadoEntity();
-                entity.setId(rst.getInt("id"));
                 entity.setNombre(rst.getString("nombre"));
                 entity.setDocumento(rst.getString("documento"));
                 entity.setCorreo(rst.getString("correo"));
                 entity.setRol(rst.getString("rol"));
                 entity.setSalario(rst.getDouble("salario"));
 
-                lista.add(EmpleadoMapper.toModel(entity));
+                listaNegocio.add(EmpleadoMapper.toModel(entity));
             }
 
         } catch (SQLException e) {
             System.out.println("tuvistes un eror al listar los empleados "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
         }
-        return lista;
+        return ResponseDomain.success(listaNegocio);
     }
 
     @Override
-    public Empleado buscarPorDocumento(String documento) {
+    public ResponseDomain<ErrorDomain, Empleado> buscarPorDocumento(String documento) {
         String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados WHERE documento=?";
         Empleado empleadoEncontrado = null;
 
@@ -77,7 +101,6 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
             try(ResultSet rs = pst.executeQuery()){
                 if (rs.next()) {
                     EmpleadoEntity entity = new EmpleadoEntity();
-                    entity.setId(rs.getInt("id"));
                     entity.setNombre(rs.getString("nombre"));
                     entity.setDocumento(rs.getString("documento"));
                     entity.setRol(rs.getString("rol"));
@@ -85,12 +108,15 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
                     entity.setSalario(rs.getDouble("salario"));
 
                     empleadoEncontrado = EmpleadoMapper.toModel(entity);
+                } else {
+                    return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
                 }
             }
 
         } catch (SQLException ex) {
             System.out.println("Error al buscar el empleado "+ ex.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
         }
-        return empleadoEncontrado;
+        return ResponseDomain.success(empleadoEncontrado);
     }
 }

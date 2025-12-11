@@ -1,7 +1,5 @@
 package com.crediya.data.entities;
 
-import com.crediya.repository.EmpleadoRepository;
-
 public class EmpleadoEntity {
     private int id;
     private String nombre;

@@ -3,8 +3,11 @@ package com.crediya.data.repositories;
 import com.crediya.connection.Conexion;
 import com.crediya.data.entities.PrestamoEntity;
 import com.crediya.data.mapper.PrestamoMapper;
-import com.crediya.models.Prestamo;
-import com.crediya.repository.PrestamoRepository;
+import com.crediya.domain.errors.ErrorDomain;
+import com.crediya.domain.errors.ErrorType;
+import com.crediya.domain.models.Prestamo;
+import com.crediya.domain.repository.PrestamoRepository;
+import com.crediya.domain.response.ResponseDomain;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -15,8 +18,19 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
 
 
     @Override
-    public void guardar(Prestamo prestamoModelo) {
+    public ResponseDomain<ErrorDomain, Integer> guardar(Prestamo prestamoModelo) {
         PrestamoEntity entity = PrestamoMapper.toEntity(prestamoModelo);
+
+        var existMonto = prestamoModelo.getMonto();
+        if (existMonto <= 0 ){
+            return ResponseDomain.error(new ErrorDomain(ErrorType.INVALID_AMOUNT));
+        }
+
+        var existCuotas = prestamoModelo.getCuotas();
+        if (existCuotas <= 0 ){
+            return ResponseDomain.error(new ErrorDomain(ErrorType.INVALID_INSTALLMENTS));
+        }
+
 
         entity.setFechaInicio(LocalDate.now()); // Fecha de hoy
         entity.setEstado("PENDIENTE");          // Estado inicial
@@ -36,25 +50,39 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
             pst.setInt(7, entity.getClienteId());// se inserta las claves foráneas (IDs)
             pst.setInt(8, entity.getEmpleadoId());
 
-            pst.executeUpdate();
+            var rows = pst.executeUpdate();
 
-            try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    prestamoModelo.setId(generatedKeys.getInt(1));
-                    System.out.println("Préstamo registrado con ID: " + prestamoModelo.getId());
+            if (rows > 0) {
+                try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return ResponseDomain.success(generatedKeys.getInt(1));
+                    }
+                }
+            }
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+
+        } catch (SQLException e) {
+            String mensajeError = e.getMessage();
+            if (mensajeError.contains("foreign key")) {
+                if (mensajeError.contains("cliente_id")) {
+                    return ResponseDomain.error(new ErrorDomain(ErrorType.CLIENT_NOT_FOUND));
+                }
+                if (mensajeError.contains("empleado_id")) {
+                    return ResponseDomain.error(new ErrorDomain(ErrorType.EMPLOYEE_NOT_FOUND));
+
                 }
             }
 
-        } catch (SQLException e) {
-            System.out.printf("Error al guardar el prestamo :( "+e.getMessage());
+            System.out.println("Error SQL crítico: " + mensajeError);
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
         }
 
 
     }
 
     @Override
-    public List<Prestamo> listarTodos() {
-        List<Prestamo> lista = new ArrayList<>();
+    public ResponseDomain<ErrorDomain, List<Prestamo>> listarTodosPrestamos() {
+        List<Prestamo> listaNegocio = new ArrayList<>();
         String sql = "SELECT id, monto, interes, cuotas, fecha_inicio, estado, saldo_pendiente, cliente_id, empleado_id FROM prestamos";
 
         try (Connection con = Conexion.getConexion();
@@ -76,11 +104,12 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
                 entity.setClienteId(rs.getInt("cliente_id"));
                 entity.setEmpleadoId(rs.getInt("empleado_id"));
 
-                lista.add(PrestamoMapper.toModel(entity));
+                listaNegocio.add(PrestamoMapper.toModel(entity));
             }
         } catch (SQLException e) {
             System.out.println("Error al listar préstamos: " + e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
         }
-        return lista;
+        return ResponseDomain.success(listaNegocio);
     }
 }

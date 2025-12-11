@@ -1,8 +1,8 @@
-package com.crediya.persistence;
+package com.crediya.data.persistence;
 
 import java.util.List;
 
-import com.crediya.models.Empleado;
+import com.crediya.domain.models.Empleado;
 
 public interface EmpleadoRepositorio {
     void registrar(Empleado empleado);

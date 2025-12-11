@@ -1,9 +1,9 @@
 package com.crediya.data.mapper;
 
 import com.crediya.data.entities.PrestamoEntity;
-import com.crediya.models.Cliente;
-import com.crediya.models.Empleado;
-import com.crediya.models.Prestamo;
+import com.crediya.domain.models.Cliente;
+import com.crediya.domain.models.Empleado;
+import com.crediya.domain.models.Prestamo;
 
 public class PrestamoMapper {
 
