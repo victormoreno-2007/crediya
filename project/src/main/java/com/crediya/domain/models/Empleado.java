@@ -38,8 +38,7 @@ public class Empleado extends Persona {
 
     @Override
     public String toString() {
-        return "Empleado{" +
-                "rol='" + rol + '\'' +
-                '}';
+        return   "\tID: " + getId() + "\n" + "\tNOMBRE: " + getNombre() + "\n" + "\tDOCUMENTO: " + getDocumento()+ "\n"
+                + "\tCORREO: " + getCorreo() + "\n" + "============================"+ "\n" + "\n";
     }
 }

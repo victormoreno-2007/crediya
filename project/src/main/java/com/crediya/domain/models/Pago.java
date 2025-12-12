@@ -31,6 +31,10 @@ public class Pago {
 
     @Override
     public String toString() {
-        return "Pago #" + id + " | Valor: $" + monto + " | Fecha: " + fechaPago;
+        return "\tID: "+ getId()+ "\n" +
+                "\tPRESTAMO ID: " + getPrestamo().getId() + "\n" +
+                "\tPRESTAMO SALDO PENDIENTE: " + getPrestamo().getSaldoPendiente() + "\n" +
+                "\tMONTO PRESTADO: " + getMonto() + "\n" +
+                "===================================" + "\n" + "\n";
     }
 }

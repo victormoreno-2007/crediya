@@ -1,12 +1,14 @@
 package com.crediya.data.entities;
 
+import com.crediya.domain.models.Cliente;
+import com.crediya.domain.models.Empleado;
+
 import java.time.LocalDate;
-import java.util.Date;
 
 public class PrestamoEntity {
     private int id;
-    private Integer clienteId;
-    private Integer empleadoId;
+    private Cliente cliente;
+    private Empleado empleado;
     private double monto;
     private double interes;
     private int cuotas;
@@ -25,20 +27,20 @@ public class PrestamoEntity {
         this.id = id;
     }
 
-    public Integer getClienteId() {
-        return clienteId;
+    public Cliente getCliente() {
+        return cliente;
     }
 
-    public void setClienteId(Integer clienteId) {
-        this.clienteId = clienteId;
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
-    public Integer getEmpleadoId() {
-        return empleadoId;
+    public Empleado getEmpleado() {
+        return empleado;
     }
 
-    public void setEmpleadoId(Integer empleadoId) {
-        this.empleadoId = empleadoId;
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
     }
 
     public double getMonto() {

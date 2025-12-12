@@ -3,7 +3,6 @@ package com.crediya.data.repositories;
 import com.crediya.connection.Conexion;
 import com.crediya.data.entities.EmpleadoEntity;
 import com.crediya.data.mapper.EmpleadoMapper;
-import com.crediya.domain.errors.DuplicateDocumentException;
 import com.crediya.domain.errors.ErrorDomain;
 import com.crediya.domain.errors.ErrorType;
 import com.crediya.domain.models.Empleado;
@@ -64,7 +63,7 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
     @Override
     public ResponseDomain<ErrorDomain, List<Empleado>> listarTodos() {
         List<Empleado> listaNegocio = new ArrayList<>();
-        String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados";
+        String sql = "SELECT id, nombre, documento, rol, correo, salario FROM empleados";
 
         try (Connection cont = Conexion.getConexion();
              PreparedStatement pst = cont.prepareStatement(sql);
@@ -72,13 +71,16 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
 
             while (rst.next()) {
                 EmpleadoEntity entity = new EmpleadoEntity();
+                entity.setId(rst.getInt("id"));
                 entity.setNombre(rst.getString("nombre"));
                 entity.setDocumento(rst.getString("documento"));
                 entity.setCorreo(rst.getString("correo"));
                 entity.setRol(rst.getString("rol"));
                 entity.setSalario(rst.getDouble("salario"));
 
-                listaNegocio.add(EmpleadoMapper.toModel(entity));
+                Empleado modelo = EmpleadoMapper.toModel(entity);
+
+                listaNegocio.add(modelo);
             }
 
         } catch (SQLException e) {
@@ -90,7 +92,7 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
 
     @Override
     public ResponseDomain<ErrorDomain, Empleado> buscarPorDocumento(String documento) {
-        String sql = "SELECT nombre, documento, rol, correo, salario FROM empleados WHERE documento=?";
+        String sql = "SELECT id, nombre, documento, rol, correo, salario FROM empleados WHERE documento=?";
         Empleado empleadoEncontrado = null;
 
         try(Connection cont = Conexion.getConexion();
@@ -98,21 +100,21 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
 
             pst.setString(1, documento);
 
-            try(ResultSet rs = pst.executeQuery()){
-                if (rs.next()) {
+            try(ResultSet rst = pst.executeQuery()){
+                if (rst.next()) {
                     EmpleadoEntity entity = new EmpleadoEntity();
-                    entity.setNombre(rs.getString("nombre"));
-                    entity.setDocumento(rs.getString("documento"));
-                    entity.setRol(rs.getString("rol"));
-                    entity.setCorreo(rs.getString("correo"));
-                    entity.setSalario(rs.getDouble("salario"));
+                    entity.setId(rst.getInt("id"));
+                    entity.setNombre(rst.getString("nombre"));
+                    entity.setDocumento(rst.getString("documento"));
+                    entity.setRol(rst.getString("rol"));
+                    entity.setCorreo(rst.getString("correo"));
+                    entity.setSalario(rst.getDouble("salario"));
 
                     empleadoEncontrado = EmpleadoMapper.toModel(entity);
                 } else {
                     return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
                 }
             }
-
         } catch (SQLException ex) {
             System.out.println("Error al buscar el empleado "+ ex.getMessage());
             return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));

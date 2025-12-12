@@ -116,6 +116,10 @@ public class Prestamo {
     }
 
     public double getMontoTotal() {
+        if (montoTotal == 0 && cuotas > 0) {
+            this.montoTotal = getCuotaMensual() * cuotas;
+            this.montoTotal = Math.round(this.montoTotal * 100.0) / 100.0;
+        }
         return montoTotal;
     }
 
@@ -124,6 +128,15 @@ public class Prestamo {
     }
 
     public double getCuotaMensual() {
+        if (cuotaMensual == 0 && cuotas > 0 && monto > 0) {
+            double i = (interes / 100.0) / 12.0;
+            if (i == 0) {
+                this.cuotaMensual = monto / cuotas;
+            } else {
+                this.cuotaMensual = monto * (i * Math.pow(1 + i, cuotas)) / (Math.pow(1 + i, cuotas) - 1);
+            }
+            this.cuotaMensual = Math.round(this.cuotaMensual * 100.0) / 100.0;
+        }
         return cuotaMensual;
     }
 
@@ -133,8 +146,17 @@ public class Prestamo {
 
     @Override
     public String toString() {
-        return "Préstamo #" + id +
-               " | Cliente: " + (cliente != null ? cliente.getNombre() : "N/A") +
-               " | Saldo: $" + saldoPendiente;
+        String nombreCliente = (getCliente() != null) ? getCliente().getNombre() : "N/A";
+        String nombreEmpleado = (getEmpleado() != null) ? getEmpleado().getNombre() : "N/A";
+        return   "\tID: " + getId() + "\n" +
+                "\tCLIENTE: " + nombreCliente + "\n" +
+                "\tEMPLEADO: " + nombreEmpleado+ "\n" +
+                "\tFECHA: "+ getFechaInicio() + "\n" +
+                "\tESTADO: "+ getEstado() + "\n" +
+                "\tMONTO PRESTADO: "+ getMonto() + "\n" +
+                "\tCUOTAS: "+ getCuotas() + " X $"+ getCuotaMensual()+ "\n" +
+                "\tTOTAL A PAGAR: "+ getMontoTotal()+ "\n"+
+                "\tSALDO PENDIENTE: " + getSaldoPendiente() +
+                "\n" + "============================"+ "\n" + "\n";
     }
 }

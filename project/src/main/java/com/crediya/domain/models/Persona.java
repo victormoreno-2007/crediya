@@ -48,4 +48,10 @@ public abstract class Persona {
     public void setCorreo(String correo) {
         this.correo = correo;
     }
+
+    @Override
+    public String toString() {
+        return "\tID: " + getId() + "\n" + "\tNOMBRE: " + getNombre() + "\n" + "\tDOCUMENTO: " + getDocumento()+ "\n"
+                + "\tCORREO: " + getCorreo();
+    }
 }

@@ -5,7 +5,7 @@ public enum ErrorType {
     DUPLICATE_ID_FIELD(100, "The field is required for this action"),
     DUPLICATE_PRIMARY_KEY(101, "The primary field is duplicated"),
     NO_NEGATIVE_WAGES(400, "salary cannot be a negative value."),
-    NO_ROLE_EXIXST(404, "no rol selected"),
+    NO_VALIDE_IMPUT(400, "incorrect input value"),
     DATABASE_ERROR(500, "Incorrect request to the database"),
     RESOURCE_NOT_FOUND(404, "resource not found"),
     INVALID_AMOUNT(400, "The loan amount must be greater than zero."),

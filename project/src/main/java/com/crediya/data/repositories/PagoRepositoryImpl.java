@@ -90,7 +90,9 @@ public class PagoRepositoryImpl implements PagoRepository {
     @Override
     public ResponseDomain<ErrorDomain, List<Pago>> listarPagos() {
         List<Pago> listaNegocioPago = new ArrayList<>();
-        String sql = "SELECT id, prestamo_id, fecha_pago, monto FROM pagos";
+        String sql = "SELECT p.id, p.fecha_pago, p.monto, p.prestamo_id, pr.saldo_pendiente " +
+                     "FROM pagos p " +
+                     "INNER JOIN prestamos pr ON p.prestamo_id = pr.id";
 
         try (Connection cont = Conexion.getConexion();
         PreparedStatement psmt = cont.prepareStatement(sql);
@@ -99,6 +101,7 @@ public class PagoRepositoryImpl implements PagoRepository {
             while (rst.next()){
                 Prestamo prestamoRef = new Prestamo();
                 prestamoRef.setId(rst.getInt("prestamo_id"));
+                prestamoRef.setSaldoPendiente(rst.getDouble("saldo_pendiente"));
                 Pago pago = new Pago();
                 pago.setId(rst.getInt("id"));
                 pago.setMonto(rst.getDouble("monto"));

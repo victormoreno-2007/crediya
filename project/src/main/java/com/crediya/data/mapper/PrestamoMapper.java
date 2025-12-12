@@ -21,18 +21,9 @@ public class PrestamoMapper {
         model.setFechaInicio(entity.getFechaInicio());
         model.setEstado(entity.getEstado());
         model.setSaldoPendiente(entity.getSaldoPendiente());
+        model.setCliente(entity.getCliente());
+        model.setEmpleado(entity.getEmpleado());
 
-        if (entity.getClienteId() != null ) {
-            Cliente cliente = new Cliente(); // O new Clientes()
-            cliente.setId(entity.getClienteId());
-            model.setCliente(cliente);
-        }
-
-        if (entity.getEmpleadoId() != null) {
-            Empleado empleado = new Empleado();
-            empleado.setId(entity.getEmpleadoId());
-            model.setEmpleado(empleado);
-        }
         return model;
     }
 
@@ -48,15 +39,10 @@ public class PrestamoMapper {
         entity.setFechaInicio(model.getFechaInicio());
         entity.setEstado(model.getEstado());
         entity.setSaldoPendiente(model.getSaldoPendiente());
+        entity.setCliente(model.getCliente());
+        entity.setEmpleado(model.getEmpleado());
 
 
-        if (model.getCliente() != null) {
-            entity.setClienteId(model.getCliente().getId());
-        }
-
-        if (model.getEmpleado() != null) {
-            entity.setEmpleadoId(model.getEmpleado().getId());
-        }
 
         return entity;
     }

@@ -1,20 +1,37 @@
-// package com.crediya.service;
+package com.crediya.service;
 
-// import com.crediya.domain.models.Pago;
-// import com.crediya.domain.models.Prestamo;
-// import com.crediya.data.persistence.impl.PagoDAO;
+import com.crediya.domain.errors.ErrorDomain;
+import com.crediya.domain.models.Pago;
+import com.crediya.domain.models.Prestamo;
+import com.crediya.domain.repository.PagoRepository;
+import com.crediya.domain.response.ResponseDomain;
 
-// import java.time.LocalDate;
+import java.time.LocalDate;
+import java.util.List;
 
-// public class PagoService {
-//     private final PagoDAO pagoDAO;
+public class PagoService {
 
-//     public PagoService(PagoDAO pagoDAO) {
-//         this.pagoDAO = pagoDAO;
-//     }
+    private final PagoRepository pagoRepository;
 
-//     public boolean registrarPago(Prestamo prestamo, double monto) {
-//         Pago pago = new Pago(prestamo, LocalDate.now(), monto);
-//         return pagoDAO.registrarPago(pago);
-//     }
-// }
+    public PagoService(PagoRepository pagoRepository) {
+        this.pagoRepository = pagoRepository;
+    }
+
+    public ResponseDomain<ErrorDomain, Integer> registrarPago(int idPrestamo, double monto){
+        Prestamo prestamo = new Prestamo();
+        prestamo.setId(idPrestamo);
+
+        Pago pago = new Pago();
+        pago.setMonto(monto);
+        pago.setFechaPago(LocalDate.now());
+        pago.setPrestamo(prestamo);
+
+        return pagoRepository.guardar(pago);
+
+    }
+    public ResponseDomain<ErrorDomain, List<Pago>> obtenerHistorialPagos(){
+        return pagoRepository.listarPagos();
+    }
+
+
+}

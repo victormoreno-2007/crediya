@@ -10,10 +10,7 @@ import com.crediya.domain.models.Cliente;
 import com.crediya.domain.repository.ClienteRepository;
 import com.crediya.domain.response.ResponseDomain;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +20,29 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     public ResponseDomain<ErrorDomain, Integer> registrar(Cliente clienteModelo) {
         ClienteEntity entity = ClienteMapper.toEntity(clienteModelo);
         var exists = buscarPorDocumento(clienteModelo.getDocumento());
-        if(exists != null) {
+
+        if(!exists.hasError()) {
             return new ResponseDomain(new DuplicateDocumentException("The document field is asociado a other user xd"));
         }
 
-        String sql = "INSERT INTO clientes (nombre, documento, correo, telefono) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO clientes(nombre, documento, correo, telefono) VALUES (?, ?, ?, ?)";
 
         try (Connection cont = Conexion.getConexion();
-             PreparedStatement pst = cont.prepareStatement(sql)){
+             PreparedStatement pst = cont.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)){
             pst.setString(1, entity.getNombre());
             pst.setString(2, entity.getDocumento());
             pst.setString(3, entity.getCorreo());
             pst.setString(4, entity.getTelefono());
 
             var rows = pst.executeUpdate();
+            if (rows > 0) {
+                try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int idReal = generatedKeys.getInt(1); // Este es el ID de la BD (ej. 5, 6, 7...)
+                        return new ResponseDomain(idReal);
+                    }
+                }
+            }
 
             return new ResponseDomain(rows);
         } catch (SQLException e) {
@@ -49,14 +55,15 @@ public class ClienteRepositoryImpl implements ClienteRepository {
     @Override
     public ResponseDomain<ErrorDomain, List<Cliente>> listarTodos() {
         List<Cliente> listaNegocio = new ArrayList<>();
-        String sql = "SELECT nombre, documento, correo, telefono FROM clientes";
+        String sql = "SELECT id, nombre, documento, correo, telefono FROM clientes";
 
         try (Connection cont = Conexion.getConexion();
-        PreparedStatement pst = cont.prepareStatement(sql);
-             ResultSet rst = pst.executeQuery()){
+            PreparedStatement pst = cont.prepareStatement(sql);
+            ResultSet rst = pst.executeQuery()){
 
             while (rst.next()){
                 ClienteEntity entity = new ClienteEntity();
+                entity.setId(rst.getInt("id"));
                 entity.setNombre(rst.getString("Nombre"));
                 entity.setDocumento(rst.getString("documento"));
                 entity.setCorreo(rst.getString("correo"));
@@ -70,36 +77,39 @@ public class ClienteRepositoryImpl implements ClienteRepository {
 
         } catch (SQLException e) {
             System.out.printf("Error al listar los clientes :( "+ e.getMessage());
-            return ResponseDomain.error(new ErrorDomain(ErrorType.DUPLICATE_PRIMARY_KEY));
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
         }
         return ResponseDomain.success(listaNegocio);
     }
 
     @Override
-    public Cliente buscarPorDocumento(String documento) {
-        String sql = "SELECT nombre, documento, correo, telefono FROM clientes WHERE documento=?";
+    public ResponseDomain<ErrorDomain, Cliente> buscarPorDocumento(String documento) {
+        String sql = "SELECT id, nombre, documento, correo, telefono FROM clientes WHERE documento=?";
         Cliente clienteEncontrado = null;
 
         try (Connection cont = Conexion.getConexion();
-        PreparedStatement pst = cont.prepareStatement(sql)) {
+            PreparedStatement pst = cont.prepareStatement(sql)) {
 
             pst.setString(1, documento);
 
             try (ResultSet rst = pst.executeQuery()){
-
                 if (rst.next()){
                     ClienteEntity entity = new ClienteEntity();
+                    entity.setId(rst.getInt("id"));
                     entity.setNombre(rst.getString("nombre"));
                     entity.setDocumento(rst.getString("documento"));
                     entity.setCorreo(rst.getString("correo"));
                     entity.setTelefono(rst.getString("telefono"));
 
                     clienteEncontrado = ClienteMapper.toModel(entity);
+                }else {
+                    return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
                 }
             }
         } catch (SQLException e) {
-            System.out.printf("Error al buscar el cliente :( "+ e.getMessage());
+            System.out.println("Error al buscar el cliente "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
         }
-    return clienteEncontrado;
+        return ResponseDomain.success(clienteEncontrado);
     }
 }

@@ -27,6 +27,12 @@ public class Cliente extends Persona{
 
     @Override
     public String toString() {
-        return super.toString() + " - Tel: " + telefono;
+        return   "\tID: " + getId() + "\n" +
+                 "\tNOMBRE: " + getNombre() + "\n" +
+                 "\tDOCUMENTO: " + getDocumento()+ "\n" +
+                 "\tCORREO: " + getCorreo() + "\n" +
+                 "\tTELEFONO: " + getTelefono() + "\n" +
+                "============================"+ "\n" + "\n";
     }
+
 }

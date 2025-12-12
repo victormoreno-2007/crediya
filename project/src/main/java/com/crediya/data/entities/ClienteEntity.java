@@ -1,7 +1,5 @@
 package com.crediya.data.entities;
 
-import java.util.stream.Stream;
-
 public class ClienteEntity  {
     private int id;
     private String nombre;

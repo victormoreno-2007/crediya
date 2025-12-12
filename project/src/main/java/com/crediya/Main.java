@@ -1,14 +1,13 @@
 package com.crediya;
 
 
-import com.crediya.data.repositories.PagoRepositoryImpl;
-import com.crediya.domain.models.Pago;
-
+import com.crediya.view.MenuPrincipal;
 
 
 public class Main {
     public static void main(String[] args) {
-
+        MenuPrincipal menu = new MenuPrincipal();
+        menu.iniciar();
 
     }
 }
