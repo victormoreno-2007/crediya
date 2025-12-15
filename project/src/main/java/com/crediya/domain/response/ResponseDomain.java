@@ -55,4 +55,17 @@ public class ResponseDomain<E extends ErrorDomain, T> {
     public static <E extends ErrorDomain, T> ResponseDomain<E,T> success(T model) {
         return new ResponseDomain(model);
     }
+
+    public E getErrorDomain() {
+        return error;
+    }
+
+    public boolean isSuccess() {
+        return error == null;
+    }
+
+
+    public boolean isError() {
+        return error != null;
+    }
 }

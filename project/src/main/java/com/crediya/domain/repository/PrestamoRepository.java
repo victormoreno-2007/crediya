@@ -11,4 +11,11 @@ public interface PrestamoRepository {
 
     ResponseDomain<ErrorDomain, List<Prestamo>> listarTodosPrestamos();
 
+    ResponseDomain<ErrorDomain, Boolean> actualizar(Prestamo prestamo);
+
+    ResponseDomain<ErrorDomain, Boolean> eliminar(int id);
+
+    ResponseDomain<ErrorDomain, Prestamo> buscarPorId(int id);
+
+    ResponseDomain<ErrorDomain, List<Prestamo>> buscarPorCliente(int idCliente);
 }

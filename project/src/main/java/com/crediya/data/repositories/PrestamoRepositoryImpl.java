@@ -36,7 +36,7 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
 
         entity.setFechaInicio(LocalDate.now()); // Fecha de hoy
         entity.setEstado("PENDIENTE");          // Estado inicial
-        entity.setSaldoPendiente(entity.getMonto()); // sed debe lo mismo que prestó
+        entity.setSaldoPendiente(prestamoModelo.getMontoTotal());
 
         String sql = "INSERT INTO prestamos (monto, interes, cuotas, fecha_inicio, estado, saldo_pendiente, cliente_id, empleado_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -125,5 +125,137 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
             return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
         }
         return ResponseDomain.success(listaNegocio);
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> actualizar(Prestamo prestamo) {
+        PrestamoEntity entity = PrestamoMapper.toEntity(prestamo);
+        String sql = "UPDATE prestamos SET monto=?, interes=?, cuotas=?, fecha_inicio=?, estado=?, saldo_pendiente=? WHERE id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setDouble(1, entity.getMonto());
+            pst.setDouble(2, entity.getInteres());
+            pst.setInt(3, entity.getCuotas());
+            pst.setDate(4, java.sql.Date.valueOf(entity.getFechaInicio()));
+            pst.setString(5, entity.getEstado());
+
+            pst.setDouble(6, entity.getSaldoPendiente());
+
+            pst.setInt(7, entity.getId());
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0){
+                return  ResponseDomain.success(true);
+            } else {
+                return ResponseDomain.error( new ErrorDomain(ErrorType.RECORD_NOT_UPDATED));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar el prestamo :( "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> eliminar(int id) {
+        String sql = "DELETE FROM prestamos WHERE  id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setInt(1, id);
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0 ){
+                return ResponseDomain.success(true);
+            } else {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.RECORD_NOT_DELETED));
+            }
+
+        } catch (SQLException e) {
+            if (e.getMessage().contains("foreign key") || e.getMessage().contains("constraint")) {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.CANNOT_DELETE_HAS_DATA));
+            }
+            System.out.println("Error al eliminar el prestamo :( "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+    }
+    @Override
+    public ResponseDomain<ErrorDomain, Prestamo> buscarPorId(int id) {
+        String sql = "SELECT p.id, p.monto, p.interes, p.cuotas, p.fecha_inicio, p.estado, p.saldo_pendiente, " +
+                "c.id AS cli_id, c.nombre AS cli_nombre, " +
+                "e.id AS emp_id, e.nombre AS emp_nombre " +
+                "FROM prestamos p " +
+                "INNER JOIN clientes c ON p.cliente_id = c.id " +
+                "INNER JOIN empleados e ON p.empleado_id = e.id " +
+                "WHERE p.id = ?";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Cliente cliente = new Cliente();
+                    cliente.setId(rs.getInt("cli_id"));
+                    cliente.setNombre(rs.getString("cli_nombre"));
+
+                    Empleado empleado = new Empleado();
+                    empleado.setId(rs.getInt("emp_id"));
+                    empleado.setNombre(rs.getString("emp_nombre"));
+
+                    Prestamo prestamo = new Prestamo();
+                    prestamo.setId(rs.getInt("id"));
+                    prestamo.setMonto(rs.getDouble("monto"));
+                    prestamo.setInteres(rs.getDouble("interes"));
+                    prestamo.setCuotas(rs.getInt("cuotas"));
+                    if (rs.getDate("fecha_inicio") != null) {
+                        prestamo.setFechaInicio(rs.getDate("fecha_inicio").toLocalDate());
+                    }
+                    prestamo.setEstado(rs.getString("estado"));
+                    prestamo.setSaldoPendiente(rs.getDouble("saldo_pendiente"));
+                    prestamo.setCliente(cliente);
+                    prestamo.setEmpleado(empleado);
+
+                    return ResponseDomain.success(prestamo);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar préstamo: " + e.getMessage());
+        }
+        return ResponseDomain.error(new ErrorDomain(ErrorType.LOAN_NOT_FOUND)); // Asegúrate de tener este error o usa uno genérico
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, List<Prestamo>> buscarPorCliente(int idCliente) {
+        List<Prestamo> lista = new ArrayList<>();
+        String sql = "SELECT p.id, p.monto, p.saldo_pendiente, p.estado, p.cuotas " +
+                "FROM prestamos p WHERE p.cliente_id = ?";
+
+        try (Connection con = Conexion.getConexion();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idCliente);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Prestamo p = new Prestamo();
+                    p.setId(rs.getInt("id"));
+                    p.setMonto(rs.getDouble("monto"));
+                    p.setSaldoPendiente(rs.getDouble("saldo_pendiente"));
+                    p.setEstado(rs.getString("estado"));
+                    p.setCuotas(rs.getInt("cuotas"));
+                    lista.add(p);
+                }
+            }
+        } catch (SQLException e) {
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+        return ResponseDomain.success(lista);
     }
 }

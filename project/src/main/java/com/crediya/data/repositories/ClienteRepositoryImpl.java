@@ -22,7 +22,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
         var exists = buscarPorDocumento(clienteModelo.getDocumento());
 
         if(!exists.hasError()) {
-            return new ResponseDomain(new DuplicateDocumentException("The document field is asociado a other user xd"));
+            return new ResponseDomain(new DuplicateDocumentException("El documento ya se encuentra asociado a otro usuario."));
         }
 
         String sql = "INSERT INTO clientes(nombre, documento, correo, telefono) VALUES (?, ?, ?, ?)";
@@ -38,7 +38,7 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             if (rows > 0) {
                 try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
-                        int idReal = generatedKeys.getInt(1); // Este es el ID de la BD (ej. 5, 6, 7...)
+                        int idReal = generatedKeys.getInt(1);
                         return new ResponseDomain(idReal);
                     }
                 }
@@ -111,5 +111,59 @@ public class ClienteRepositoryImpl implements ClienteRepository {
             return ResponseDomain.error(new ErrorDomain(ErrorType.RESOURCE_NOT_FOUND));
         }
         return ResponseDomain.success(clienteEncontrado);
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> actualizar(Cliente cliente) {
+        ClienteEntity entity = ClienteMapper.toEntity(cliente);
+        String sql = "UPDATE clientes SET nombre=?, documento=?, correo=?, telefono=? WHERE id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setString(1, entity.getNombre());
+            pst.setString(2, entity.getDocumento());
+            pst.setString(3, entity.getCorreo());
+            pst.setString(4, entity.getTelefono());
+            pst.setInt(5, entity.getId());
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0){
+               return ResponseDomain.success(true);
+            } else {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.CLIENT_NOT_FOUND));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar el cliente :( "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> eliminar(int id) {
+        String sql = "DELETE FROM clientes WHERE id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setInt(1, id);
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0){
+                return  ResponseDomain.success(true);
+            } else {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.CLIENT_NOT_FOUND));
+            }
+        } catch (SQLException e) {
+            if (e.getMessage().contains("foreign key") || e.getMessage().contains("constraint")) {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.CANNOT_DELETE_HAS_DATA));
+            }
+            System.out.println("Error al eliminar el cliente :( "+ e.getMessage());
+            return  ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
     }
 }

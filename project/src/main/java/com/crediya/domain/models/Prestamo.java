@@ -57,6 +57,8 @@ public class Prestamo {
 
     public void setMonto(double monto) {
         this.monto = monto;
+        this.montoTotal = 0;
+        this.cuotaMensual = 0;
     }
 
     public double getInteres() {
@@ -65,6 +67,8 @@ public class Prestamo {
 
     public void setInteres(double interes) {
         this.interes = interes;
+        this.montoTotal = 0;
+        this.cuotaMensual = 0;
     }
 
     public Empleado getEmpleado() {
@@ -113,6 +117,8 @@ public class Prestamo {
 
     public void setCuotas(int cuotas) {
         this.cuotas = cuotas;
+        this.montoTotal = 0;
+        this.cuotaMensual = 0;
     }
 
     public double getMontoTotal() {

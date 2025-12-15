@@ -12,4 +12,8 @@ public interface ClienteRepository {
     ResponseDomain<ErrorDomain, List<Cliente>> listarTodos();
 
     ResponseDomain<ErrorDomain, Cliente> buscarPorDocumento(String documento);
+
+    ResponseDomain<ErrorDomain, Boolean> actualizar(Cliente cliente);
+
+    ResponseDomain<ErrorDomain, Boolean> eliminar(int id);
 }

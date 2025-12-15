@@ -121,4 +121,58 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
         }
         return ResponseDomain.success(empleadoEncontrado);
     }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> actualizar(Empleado empleado) {
+        EmpleadoEntity entity = EmpleadoMapper.toEntity(empleado);
+        String sql = "UPDATE empleados SET nombre=?, documento=?, correo=?, rol=?, salario=? WHERE id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setString(1, entity.getNombre());
+            pst.setString(2, entity.getDocumento());
+            pst.setString(3, entity.getCorreo());
+            pst.setString(4, empleado.getRol());
+            pst.setDouble(5,entity.getSalario());
+            pst.setInt(6, entity.getId());
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0) {
+                return ResponseDomain.success(true);
+            } else {
+                 return ResponseDomain.error(new ErrorDomain(ErrorType.EMPLOYEE_NOT_FOUND));
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar el empleado :( "+ e.getMessage());
+            return ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+    }
+
+    @Override
+    public ResponseDomain<ErrorDomain, Boolean> eliminar(int id) {
+        String sql = "DELETE FROM empleados WHERE id=?";
+
+        try (Connection cont = Conexion.getConexion();
+        PreparedStatement pst = cont.prepareStatement(sql)){
+
+            pst.setInt(1, id);
+
+            var rows = pst.executeUpdate();
+
+            if (rows > 0){
+                return ResponseDomain.success(true);
+            } else {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.EMPLOYEE_NOT_FOUND));
+            }
+        } catch (SQLException e) {
+            if (e.getMessage().contains("foreign key") || e.getMessage().contains("constraint")) {
+                return ResponseDomain.error(new ErrorDomain(ErrorType.CANNOT_DELETE_HAS_DATA));
+            }
+            System.out.println("Error al eliminar el empleado :( "+ e.getMessage());
+            return  ResponseDomain.error(new ErrorDomain(ErrorType.DATABASE_ERROR));
+        }
+    }
 }

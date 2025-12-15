@@ -10,4 +10,12 @@ public interface PagoRepository {
     ResponseDomain<ErrorDomain, Integer> guardar(Pago pago);
 
     ResponseDomain<ErrorDomain, List<Pago>> listarPagos();
+
+    ResponseDomain<ErrorDomain, Boolean> actualizar(Pago pago);
+
+    ResponseDomain<ErrorDomain, Boolean> eliminar(int id);
+
+    ResponseDomain<ErrorDomain, Pago> buscarPorId(int id);
+
+    double sumarPagosPorPrestamo(int idPrestamo);
 }

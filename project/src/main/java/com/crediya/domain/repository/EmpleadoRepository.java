@@ -12,4 +12,8 @@ public interface EmpleadoRepository {
     ResponseDomain<ErrorDomain, List<Empleado>> listarTodos();
 
     ResponseDomain<ErrorDomain, Empleado> buscarPorDocumento(String documento);
+
+    ResponseDomain<ErrorDomain, Boolean> actualizar(Empleado empleado);
+
+    ResponseDomain<ErrorDomain, Boolean> eliminar(int id);
 }
