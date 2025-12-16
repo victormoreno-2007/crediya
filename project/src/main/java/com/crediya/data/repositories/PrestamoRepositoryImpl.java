@@ -10,6 +10,7 @@ import com.crediya.domain.models.Empleado;
 import com.crediya.domain.models.Prestamo;
 import com.crediya.domain.repository.PrestamoRepository;
 import com.crediya.domain.response.ResponseDomain;
+import com.crediya.util.GestorArchivos;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -57,8 +58,20 @@ public class PrestamoRepositoryImpl implements PrestamoRepository {
             if (rows > 0) {
                 try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
+                        int idGenerado = generatedKeys.getInt(1);
 
-                        return ResponseDomain.success(generatedKeys.getInt(1));
+                        GestorArchivos archivo = new GestorArchivos();
+                        String linea = idGenerado + "," +
+                                entity.getCliente().getId() + "," +
+                                entity.getMonto() + "," +
+                                entity.getInteres() + "," +
+                                entity.getCuotas() + "," +
+                                entity.getSaldoPendiente() + "," +
+                                entity.getEstado();
+                        archivo.anexarRegistro("prestamos.txt", linea);
+
+
+                        return ResponseDomain.success(idGenerado);
                     }
                 }
             }

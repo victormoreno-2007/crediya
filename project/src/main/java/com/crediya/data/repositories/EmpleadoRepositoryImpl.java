@@ -8,6 +8,7 @@ import com.crediya.domain.errors.ErrorType;
 import com.crediya.domain.models.Empleado;
 import com.crediya.domain.repository.EmpleadoRepository;
 import com.crediya.domain.response.ResponseDomain;
+import com.crediya.util.GestorArchivos;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -43,6 +44,14 @@ public class EmpleadoRepositoryImpl implements EmpleadoRepository {
                 try(ResultSet rst = ps.getGeneratedKeys()){
                     if (rst.next()){
                         int idGenerado = rst.getInt(1);
+
+                        GestorArchivos archivo = new GestorArchivos();
+                        String linea = idGenerado + "," + empleadoModelo.getNombre() + "," +
+                                empleadoModelo.getDocumento() + "," + empleadoModelo.getRol() + "," +
+                                empleadoModelo.getSalario();
+                        archivo.anexarRegistro("empleados.txt", linea);
+
+
                         return ResponseDomain.success(idGenerado);
                     }
                 }
