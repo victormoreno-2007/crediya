@@ -9,6 +9,7 @@ import com.crediya.domain.errors.ErrorType;
 import com.crediya.domain.models.Cliente;
 import com.crediya.domain.repository.ClienteRepository;
 import com.crediya.domain.response.ResponseDomain;
+import com.crediya.util.GestorArchivos;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,6 +40,12 @@ public class ClienteRepositoryImpl implements ClienteRepository {
                 try (ResultSet generatedKeys = pst.getGeneratedKeys()) {
                     if (generatedKeys.next()) {
                         int idReal = generatedKeys.getInt(1);
+                        clienteModelo.setId(idReal);
+                        GestorArchivos archivo = new GestorArchivos();
+                        String linea = idReal + "," + clienteModelo.getNombre() + "," + clienteModelo.getDocumento() + "," + clienteModelo.getCorreo() + "," + clienteModelo.getTelefono();
+                        archivo.anexarRegistro("clientes.txt", linea);
+
+
                         return new ResponseDomain(idReal);
                     }
                 }

@@ -41,4 +41,23 @@ public class GestorArchivos {
             return false;
         }
     }
+    public boolean anexarRegistro(String nombreArchivo, String lineaDatos) {
+        File dirFile = new File(PATH_REPORTES);
+        if (!dirFile.exists()) {
+            dirFile.mkdir();
+        }
+
+        File file = new File(PATH_REPORTES, nombreArchivo);
+
+        try (FileWriter fw = new FileWriter(file, true);
+             PrintWriter pw = new PrintWriter(fw)) {
+
+            pw.println(lineaDatos);
+            return true;
+
+        } catch (IOException e) {
+            System.out.println("Error al respaldar en archivo plano: " + e.getMessage());
+            return false;
+        }
+    }
 }
