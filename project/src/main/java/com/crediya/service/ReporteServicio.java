@@ -73,6 +73,17 @@ public class ReporteServicio {
                 .forEach(System.out::println);
     }
 
+    public void reportePrestamosCancelados() {
+        System.out.println("\n--- PRÉSTAMOS ACTIVOS (CANCELADOS) ---");
+        var respuesta = prestamoRepo.listarTodosPrestamos();
+        if (respuesta.hasError()) return;
+
+        respuesta.getModel().stream()
+                .filter(p -> "CANCELADOS".equalsIgnoreCase(p.getEstado()))
+                .forEach(System.out::println);
+    }
+
+
     public void reportePrestamosVencidos() {
         var respuesta = prestamoRepo.listarTodosPrestamos();
         if (respuesta.hasError()) return;
@@ -108,7 +119,7 @@ public class ReporteServicio {
         }
     }
 
-    private void guardarReporte(String tipo, List<String> lineas) {
+    public void guardarReporte(String tipo, List<String> lineas) {
         if (lineas.isEmpty()) {
             System.out.println("No hay datos para generar el reporte de " + tipo);
             return;

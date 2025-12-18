@@ -8,8 +8,12 @@ import com.crediya.domain.errors.ErrorType;
 import com.crediya.domain.errors.OperacionCanceladaExcepcion;
 import com.crediya.domain.models.Cliente;
 import com.crediya.domain.models.Empleado;
+import com.crediya.domain.models.Prestamo;
+import com.crediya.domain.repository.PrestamoRepository;
+import com.crediya.service.Morosos;
 import com.crediya.service.PagoService;
 import com.crediya.service.PrestamoService;
+import com.crediya.service.ReporteGeneral;
 import com.crediya.service.ReporteServicio;
 import com.crediya.util.ScannerMenu;
 
@@ -21,6 +25,9 @@ public class MenuPrincipal {
     private final PagoService pagoService;
     private final ReporteServicio reporteService;
     private final ScannerMenu scanner;
+    private final ReporteGeneral reporteGeneral;
+    private final Morosos moroso;
+    private final PrestamoRepository prestamoRepository;
 
     public MenuPrincipal() {
         this.clienteRepo = new ClienteRepositoryImpl();
@@ -33,8 +40,12 @@ public class MenuPrincipal {
         this.pagoService = new PagoService(pagoRepo, prestamoRepo);
 
         this.reporteService = new ReporteServicio(clienteRepo, empleadoRepo, prestamoRepo);
+        this.reporteGeneral = new ReporteGeneral();
+        this.moroso = new Morosos();
+        this.prestamoRepository = new PrestamoRepositoryImpl();
 
         this.scanner = new ScannerMenu();
+
     }
 
     public void iniciar() {
@@ -51,6 +62,7 @@ public class MenuPrincipal {
                 case 3 -> menuPrestamos();
                 case 4 -> menuPagos();
                 case 5 -> menuReportes();
+                case 7 -> menuExamen();
                 case 0 -> {
                     salir = true;
                     System.out.println("¡Gracias por usar Crediya! Hasta luego :)");
@@ -71,6 +83,7 @@ public class MenuPrincipal {
         System.out.println("4. Actualizar Cliente");
         System.out.println("5. Eliminar Cliente");
         System.out.println("6. Ver Préstamos del Cliente");
+        System.out.println("7. Examen");
         System.out.println("0. Volver");
 
         int op = scanner.leerEntero("Seleccione:");
@@ -453,6 +466,25 @@ public class MenuPrincipal {
         }
     }
 
+    private void menuExamen() {
+        System.out.println("1. reporte general");
+        System.out.println("2. reporte morosos");
+        System.out.println("0. volver");
+        System.out.println("reportes estadisticos");
+        
+        int op = scanner.leerEntero("Seleccione:");
+        try {
+            switch (op) {
+                case 1 -> reporteGeneral.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
+                case 2 -> moroso.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
+
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción no válida.");
+            }
+        } catch (OperacionCanceladaExcepcion e) {
+            System.out.println("\n🔙 " + e.getMessage() + " Regresando al menú...");
+        }
+    }
     public String textoMenuPrincipal() {
         return """
                   ||===========================================================||
