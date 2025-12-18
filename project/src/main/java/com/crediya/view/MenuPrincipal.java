@@ -1,5 +1,7 @@
 package com.crediya.view;
 
+import java.util.List;
+
 import com.crediya.data.repositories.ClienteRepositoryImpl;
 import com.crediya.data.repositories.EmpleadoRepositoryImpl;
 import com.crediya.data.repositories.PagoRepositoryImpl;
@@ -8,9 +10,15 @@ import com.crediya.domain.errors.ErrorType;
 import com.crediya.domain.errors.OperacionCanceladaExcepcion;
 import com.crediya.domain.models.Cliente;
 import com.crediya.domain.models.Empleado;
+import com.crediya.domain.models.Prestamo;
+import com.crediya.domain.repository.PrestamoRepository;
+import com.crediya.service.GenerarReportes;
+import com.crediya.service.Morosos;
 import com.crediya.service.PagoService;
 import com.crediya.service.PrestamoService;
+import com.crediya.service.ReporteGeneral;
 import com.crediya.service.ReporteServicio;
+import com.crediya.util.GestorArchivos;
 import com.crediya.util.ScannerMenu;
 
 public class MenuPrincipal {
@@ -21,6 +29,10 @@ public class MenuPrincipal {
     private final PagoService pagoService;
     private final ReporteServicio reporteService;
     private final ScannerMenu scanner;
+    private final ReporteGeneral reporteGeneral;
+    private final Morosos moroso;
+    private final PrestamoRepository prestamoRepository;
+    private final GenerarReportes generador;
 
     public MenuPrincipal() {
         this.clienteRepo = new ClienteRepositoryImpl();
@@ -33,8 +45,13 @@ public class MenuPrincipal {
         this.pagoService = new PagoService(pagoRepo, prestamoRepo);
 
         this.reporteService = new ReporteServicio(clienteRepo, empleadoRepo, prestamoRepo);
+        this.reporteGeneral = new ReporteGeneral();
+        this.moroso = new Morosos();
+        this.prestamoRepository = new PrestamoRepositoryImpl();
+        this.generador = new GenerarReportes();
 
         this.scanner = new ScannerMenu();
+
     }
 
     public void iniciar() {
@@ -51,6 +68,7 @@ public class MenuPrincipal {
                 case 3 -> menuPrestamos();
                 case 4 -> menuPagos();
                 case 5 -> menuReportes();
+                case 6 -> menuExamen();
                 case 0 -> {
                     salir = true;
                     System.out.println("¡Gracias por usar Crediya! Hasta luego :)");
@@ -453,6 +471,44 @@ public class MenuPrincipal {
         }
     }
 
+    private void menuExamen() {
+        System.out.println("\n--- EXAMEN: GENERACIÓN DE REPORTES ---");
+        System.out.println("1. Generar Reporte General (Archivo)");
+        System.out.println("2. Generar Reporte Morosos (Archivo)");
+        System.out.println("3. Generar Reporte Estadístico (Archivo)");
+        System.out.println("0. Volver");
+
+        int op = scanner.leerEntero("Seleccione:");
+
+        // 1. Obtenemos la lista de préstamos una sola vez para no repetir código
+        var respuesta = prestamoRepository.listarTodosPrestamos();
+
+        if (respuesta.hasError()) {
+            System.out.println("Error al obtener los datos para el reporte.");
+            return;
+        }
+
+        List<Prestamo> listaParaPrestamo = respuesta.getModel();
+
+        try {
+            switch (op) {
+                // CORRECCIÓN: Usamos 'generador' para TODO.
+                // Él decide qué lógica usar gracias al Factory.
+
+                case 1 -> generador.generarReporeteEnArchivo(listaParaPrestamo, "general");
+
+                case 2 -> generador.generarReporeteEnArchivo(listaParaPrestamo, "morosos");
+
+                case 3 -> generador.generarReporeteEnArchivo(listaParaPrestamo, "estadistica");
+
+                case 0 -> System.out.println("Volviendo...");
+
+                default -> System.out.println("Opción no válida.");
+            }
+        } catch (Exception e) {
+            System.out.println("\n Error: " + e.getMessage());
+        }
+    }
     public String textoMenuPrincipal() {
         return """
                   ||===========================================================||
@@ -470,6 +526,7 @@ public class MenuPrincipal {
                 3. Gestión de Préstamos
                 4. Gestión de Pagos
                 5. Reporte Servicio
+                6. examen
                 0. Salir
                 """;
     }

@@ -8,6 +8,7 @@ public class Prestamo {
     private double interes;
     private int cuotas;
     private LocalDate fechaInicio;
+    private LocalDate fechaVencimiento;
     private String estado;
     private double saldoPendiente;
     private Cliente cliente;
@@ -20,13 +21,14 @@ public class Prestamo {
     public Prestamo() {
     }
 
-    public Prestamo(int id, double monto, double interes, LocalDate fechaInicio,
+    public Prestamo(int id, double monto, double interes, LocalDate fechaInicio, LocalDate fechaVencimiento,
                     int cuotas, String estado, double saldoPendiente,
                     Cliente cliente, Empleado empleado) {
         this.id = id;
         this.monto = monto;
         this.interes = interes;
         this.fechaInicio = fechaInicio;
+        this.fechaVencimiento = fechaVencimiento;
         this.cuotas = cuotas;
         this.estado = estado;
         this.saldoPendiente = saldoPendiente;
@@ -49,6 +51,17 @@ public class Prestamo {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDate getFechaVencimiento() {
+        if (fechaVencimiento == null && fechaInicio != null) {
+            return fechaInicio.plusMonths(cuotas);
+        }
+        return fechaVencimiento;
+    }
+
+    public void setId(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 
     public double getMonto() {

@@ -138,12 +138,12 @@ public class PracticaExamen {
 
     // RETO B: Filtrar VIP Recientes
 // Primero definimos la fecha de referencia (1 de Enero 2024)
-    LocalDate inicio2024 = LocalDate.parse("2024-01-01");
+    // LocalDate inicio2024 = LocalDate.parse("2024-01-01");
 
-    List<Prestamo> vipRecientes = prestamos.stream()
-            .filter(p -> p.getMonto() > 2000 && p.getFechaSolicitud().isAfter(inicio2024))
-            .collect(Collectors.toList());
+    // List<Prestamo> vipRecientes = prestamos.stream()
+          //   .filter(p -> p.getMonto() > 2000 && p.getFechaSolicitud().isAfter(inicio2024))
+          //   .collect(Collectors.toList());
 
-System.out.println("--- FILTRADOS (>2000 y > 2024) ---");
-vipRecientes.forEach(System.out::println);
+            // System.out.println("--- FILTRADOS (>2000 y > 2024) ---");
+// vipRecientes.forEach(System.out::println);
 }

@@ -1,0 +1,4 @@
+===== REPORETE GENERAL ===
+total Prestados 6700000.0
+total Pagado 5600000.0
+saldo Pendiente 1100000.0
