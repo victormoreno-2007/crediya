@@ -89,6 +89,7 @@ public class MenuPrincipal {
         System.out.println("4. Actualizar Cliente");
         System.out.println("5. Eliminar Cliente");
         System.out.println("6. Ver Préstamos del Cliente");
+        System.out.println("7. Examen");
         System.out.println("0. Volver");
 
         int op = scanner.leerEntero("Seleccione:");
@@ -472,6 +473,7 @@ public class MenuPrincipal {
     }
 
     private void menuExamen() {
+<<<<<<< HEAD
         System.out.println("\n--- EXAMEN: GENERACIÓN DE REPORTES ---");
         System.out.println("1. Generar Reporte General (Archivo)");
         System.out.println("2. Generar Reporte Morosos (Archivo)");
@@ -507,6 +509,29 @@ public class MenuPrincipal {
             }
         } catch (Exception e) {
             System.out.println("\n Error: " + e.getMessage());
+=======
+        System.out.println("1. reporte general");
+        System.out.println("2. reporte morosos");
+        System.out.println("3. generar reportes");
+        System.out.println("0. volver");
+        System.out.println("reportes estadisticos");
+        
+        int op = scanner.leerEntero("Seleccione:");
+        GenerarReportes reportes = new GenerarReportes();
+        List<Prestamo> listaParaPrestamo = prestamoRepository.listarTodosPrestamos().getModel();
+
+        try {
+            switch (op) {
+                case 1 -> reporteGeneral.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
+                case 2 -> moroso.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
+                case 3 -> generador.generarReporeteEnArchivo(listaParaPrestamo, "estadistica");
+
+                case 0 -> System.out.println("Volviendo...");
+                default -> System.out.println("Opción no válida.");
+            }
+        } catch (OperacionCanceladaExcepcion e) {
+            System.out.println("\n🔙 " + e.getMessage() + " Regresando al menú...");
+>>>>>>> 93d2cef308d3965be8d8b443bdd0e8ab84912b73
         }
     }
     public String textoMenuPrincipal() {

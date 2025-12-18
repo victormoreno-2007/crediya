@@ -33,7 +33,10 @@ public class ResumenEstadistico implements IReportes{
         sb.append("porcentajes de prestamos ").append(porcentaje);
         sb.append("promedios de mora ").append(diasMora);
         sb.append("clientes activos").append(ClientesActivos);
+<<<<<<< HEAD
         sb.append("archivo creado :) ");
+=======
+>>>>>>> 93d2cef308d3965be8d8b443bdd0e8ab84912b73
         return sb.toString();
     }
     

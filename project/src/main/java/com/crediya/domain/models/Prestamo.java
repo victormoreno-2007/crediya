@@ -52,6 +52,13 @@ public class Prestamo {
     public void setId(int id) {
         this.id = id;
     }
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setId(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
+    }
 
     public LocalDate getFechaVencimiento() {
         if (fechaVencimiento == null && fechaInicio != null) {
