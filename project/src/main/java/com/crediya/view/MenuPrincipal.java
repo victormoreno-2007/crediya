@@ -1,5 +1,7 @@
 package com.crediya.view;
 
+import java.util.List;
+
 import com.crediya.data.repositories.ClienteRepositoryImpl;
 import com.crediya.data.repositories.EmpleadoRepositoryImpl;
 import com.crediya.data.repositories.PagoRepositoryImpl;
@@ -10,11 +12,13 @@ import com.crediya.domain.models.Cliente;
 import com.crediya.domain.models.Empleado;
 import com.crediya.domain.models.Prestamo;
 import com.crediya.domain.repository.PrestamoRepository;
+import com.crediya.service.GenerarReportes;
 import com.crediya.service.Morosos;
 import com.crediya.service.PagoService;
 import com.crediya.service.PrestamoService;
 import com.crediya.service.ReporteGeneral;
 import com.crediya.service.ReporteServicio;
+import com.crediya.util.GestorArchivos;
 import com.crediya.util.ScannerMenu;
 
 public class MenuPrincipal {
@@ -28,6 +32,7 @@ public class MenuPrincipal {
     private final ReporteGeneral reporteGeneral;
     private final Morosos moroso;
     private final PrestamoRepository prestamoRepository;
+    private final GenerarReportes generador;
 
     public MenuPrincipal() {
         this.clienteRepo = new ClienteRepositoryImpl();
@@ -43,6 +48,7 @@ public class MenuPrincipal {
         this.reporteGeneral = new ReporteGeneral();
         this.moroso = new Morosos();
         this.prestamoRepository = new PrestamoRepositoryImpl();
+        this.generador = new GenerarReportes();
 
         this.scanner = new ScannerMenu();
 
@@ -62,7 +68,7 @@ public class MenuPrincipal {
                 case 3 -> menuPrestamos();
                 case 4 -> menuPagos();
                 case 5 -> menuReportes();
-                case 7 -> menuExamen();
+                case 6 -> menuExamen();
                 case 0 -> {
                     salir = true;
                     System.out.println("¡Gracias por usar Crediya! Hasta luego :)");
@@ -469,14 +475,19 @@ public class MenuPrincipal {
     private void menuExamen() {
         System.out.println("1. reporte general");
         System.out.println("2. reporte morosos");
+        System.out.println("3. generar reportes");
         System.out.println("0. volver");
         System.out.println("reportes estadisticos");
         
         int op = scanner.leerEntero("Seleccione:");
+        GenerarReportes reportes = new GenerarReportes();
+        List<Prestamo> listaParaPrestamo = prestamoRepository.listarTodosPrestamos().getModel();
+
         try {
             switch (op) {
                 case 1 -> reporteGeneral.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
                 case 2 -> moroso.generarReporetes(prestamoRepository.listarTodosPrestamos().getModel());
+                case 3 -> generador.generarReporeteEnArchivo(listaParaPrestamo, "estadistica");
 
                 case 0 -> System.out.println("Volviendo...");
                 default -> System.out.println("Opción no válida.");
@@ -502,6 +513,7 @@ public class MenuPrincipal {
                 3. Gestión de Préstamos
                 4. Gestión de Pagos
                 5. Reporte Servicio
+                6. examen
                 0. Salir
                 """;
     }
