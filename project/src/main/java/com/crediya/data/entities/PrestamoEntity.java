@@ -14,6 +14,7 @@ public class PrestamoEntity {
     private int cuotas;
     private LocalDate fechaInicio;
     private String estado;
+    private LocalDate fechaVencimiento;
     private double saldoPendiente;
 
     public PrestamoEntity(){}
@@ -62,6 +63,16 @@ public class PrestamoEntity {
     public int getCuotas() {
         return cuotas;
     }
+
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
+    }
+
 
     public void setCuotas(int cuotas) {
         this.cuotas = cuotas;

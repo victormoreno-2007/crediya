@@ -29,6 +29,7 @@ CREATE TABLE prestamos (
     interes DECIMAL(5,2) NOT NULL,
     cuotas INT NOT NULL,
     fecha_inicio DATE NOT NULL,
+    fecha_vencimiento DATE NOT NULL,
     estado VARCHAR(20) DEFAULT 'PENDIENTE',
     saldo_pendiente DECIMAL(12,2) NOT NULL,
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
