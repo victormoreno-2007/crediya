@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "PracticaExamen",
+            "request": "launch",
+            "mainClass": "com.crediya.domain.models.PracticaExamen",
+            "projectName": "project"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

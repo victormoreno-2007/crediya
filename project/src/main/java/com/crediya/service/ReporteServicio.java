@@ -11,6 +11,7 @@ import com.crediya.util.GestorArchivos;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -88,6 +89,7 @@ public class ReporteServicio {
                     LocalDate fechaFinEstimada = p.getFechaInicio().plusMonths(p.getCuotas());
                     return fechaFinEstimada.isBefore(hoy); // Si la fecha fin es ANTES de hoy, está vencido
                 })
+                .sorted(Comparator.comparing((Prestamo p) -> p.getFechaInicio().plusMonths(p.getCuotas())))
                 .collect(Collectors.toList());
 
         if (vencidos.isEmpty()) {
